@@ -13,6 +13,7 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler
 import org.eclipse.jetty.servlet.ServletContextHandler
 import org.eclipse.jetty.servlet.ServletHolder
 import org.eclipse.jetty.util.thread.QueuedThreadPool
+import java.nio.file.Paths
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -23,8 +24,7 @@ class JettyService @Inject constructor(@Named("PORT") port: Int,
                                        loginService: LoginService,
                                        versionServlet: VersionServlet,
                                        statusServlet: StatusServlet,
-                                       readinessServlet: ReadinessServlet,
-                                       mavenRepositoryServlet: MavenRepositoryServlet) : AbstractIdleService() {
+                                       readinessServlet: ReadinessServlet) : AbstractIdleService() {
     val threadPool = QueuedThreadPool().apply {
         name = "Jetty"
     }
@@ -36,6 +36,7 @@ class JettyService @Inject constructor(@Named("PORT") port: Int,
             logLatency = true
         }
         val servletContext = ServletContextHandler().apply {
+            val repositoryBaseDir = Paths.get(artifactStorage)
             resourceBase = artifactStorage
             securityHandler = LocalUserSecurityHandler()
             securityHandler.authenticator = BasicAuthenticator()
@@ -43,7 +44,8 @@ class JettyService @Inject constructor(@Named("PORT") port: Int,
             addServlet(ServletHolder(readinessServlet), "/_api/info/readiness")
             addServlet(ServletHolder(versionServlet), "/_api/info/version")
             addServlet(ServletHolder(statusServlet), "/_api/info/status")
-            addServlet(ServletHolder(mavenRepositoryServlet), "/maven/*")
+            addServlet(ServletHolder(RepositoryServlet(repositoryBaseDir)), "/maven/*")
+            addServlet(ServletHolder(RepositoryServlet(repositoryBaseDir)), "/ivy/*")
         }
         handler = GzipHandler() wrapping StatisticsHandler() wrapping servletContext
     }

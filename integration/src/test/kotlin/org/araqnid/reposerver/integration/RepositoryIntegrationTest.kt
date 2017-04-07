@@ -22,12 +22,22 @@ class RepositoryIntegrationTest : IntegrationTest() {
     val storageDir: Path
         get() = server.temporaryFolder.root.toPath()
 
-    @Test fun serves_file_from_storage_directory() {
+    @Test fun serves_maven_file_from_storage_directory() {
         val artifactPath = storageDir.resolve("com/example/project/0.0.0/project-0.0.0.txt")
         Files.createDirectories(artifactPath.parent)
         MoreFiles.asCharSink(artifactPath, UTF_8).write("test")
 
         execute(HttpGet("/maven/com/example/project/0.0.0/project-0.0.0.txt"))
+        assertThat(response.statusLine.statusCode, equalTo(SC_OK))
+        assertThat(response.entity.asCharSource(UTF_8).read(), equalTo("test"))
+    }
+
+    @Test fun serves_ivy_file_from_storage_directory() {
+        val artifactPath = storageDir.resolve("com/example/project/0.0.0/project-0.0.0.txt")
+        Files.createDirectories(artifactPath.parent)
+        MoreFiles.asCharSink(artifactPath, UTF_8).write("test")
+
+        execute(HttpGet("/ivy/com/example/project/0.0.0/project-0.0.0.txt"))
         assertThat(response.statusLine.statusCode, equalTo(SC_OK))
         assertThat(response.entity.asCharSource(UTF_8).read(), equalTo("test"))
     }

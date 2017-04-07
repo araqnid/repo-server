@@ -2,11 +2,8 @@ package org.araqnid.reposerver
 
 import com.google.common.io.MoreFiles
 import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.Path
 import java.util.Comparator.comparingInt
-import javax.inject.Inject
-import javax.inject.Named
-import javax.inject.Singleton
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
@@ -14,9 +11,7 @@ import javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import javax.servlet.http.HttpServletResponse.SC_CREATED
 import javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 
-@Singleton
-class MavenRepositoryServlet @Inject constructor(@Named("ARTIFACT_STORAGE") artifactStorage: String): HttpServlet() {
-    private val repositoryDir = Paths.get(artifactStorage)
+class RepositoryServlet (val repositoryDir: Path) : HttpServlet() {
 
     override fun doGet(req: HttpServletRequest, resp: HttpServletResponse) {
         val pathname = req.pathInfo
