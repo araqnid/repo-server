@@ -53,7 +53,9 @@ class AppConfig(val environment: Map<String, String>) : AbstractModule() {
 
     @Provides
     @Singleton
-    fun loginService(@Named("USERS_FILE") usersFile: String): LoginService = HashLoginService("Artifact repository", usersFile)
+    fun loginService(@Named("USERS_FILE") usersFile: String): LoginService = HashLoginService("Artifact repository", usersFile).apply {
+        isHotReload = true
+    }
 
     private fun getenv(key: String): String = environment[key] ?: throw ProvisionException("$key not specified in environment")
 }
