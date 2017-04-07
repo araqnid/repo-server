@@ -2,7 +2,7 @@ apply plugin: 'java'
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
-mainClassName = 'org.araqnid.fuellog.boot.Main'
+mainClassName = 'org.araqnid.reposerver.boot.Main'
 
 ext {
     jettyVersion = '9.4.3.v20170317'

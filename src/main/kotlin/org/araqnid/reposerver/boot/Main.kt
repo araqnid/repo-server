@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.Service
 import com.google.common.util.concurrent.ServiceManager
 import com.google.inject.Guice
 import com.google.inject.Stage
+import org.araqnid.appstatus.AppVersion
 import org.araqnid.reposerver.AppConfig
 import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
@@ -19,7 +20,8 @@ object Main {
         val serviceManager = injector.getInstance(ServiceManager::class.java)
         serviceManager.addListener(object : ServiceManager.Listener() {
             override fun healthy() {
-                logger.info("Services healthy")
+                val appVersion = injector.getInstance(AppVersion::class.java)
+                logger.info("Started ${appVersion.version ?: "<no version>"}")
             }
 
             override fun failure(service: Service) {
