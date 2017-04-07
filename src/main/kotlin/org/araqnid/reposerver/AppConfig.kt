@@ -9,6 +9,7 @@ import com.google.inject.multibindings.Multibinder
 import com.google.inject.name.Names
 import org.araqnid.appstatus.AppVersion
 import org.araqnid.appstatus.ComponentsBuilder
+import org.araqnid.appstatus.Readiness
 import org.araqnid.appstatus.StatusComponent
 import org.eclipse.jetty.security.HashLoginService
 import org.eclipse.jetty.security.LoginService
@@ -45,6 +46,10 @@ class AppConfig(val environment: Map<String, String>) : AbstractModule() {
     fun statusComponents(builder: ComponentsBuilder, @StatusSource statusComponentSources: @JvmSuppressWildcards Set<Any>): Collection<StatusComponent> {
         return builder.buildStatusComponents(*statusComponentSources.toTypedArray())
     }
+
+    @Provides
+    @Singleton
+    fun readinessServlet() = ReadinessServlet(Readiness.READY)
 
     @Provides
     @Singleton

@@ -21,6 +21,9 @@ import javax.inject.Singleton
 class JettyService @Inject constructor(@Named("PORT") port: Int,
                                        @Named("ARTIFACT_STORAGE") artifactStorage: String,
                                        loginService: LoginService,
+                                       versionServlet: VersionServlet,
+                                       statusServlet: StatusServlet,
+                                       readinessServlet: ReadinessServlet,
                                        mavenRepositoryServlet: MavenRepositoryServlet) : AbstractIdleService() {
     val threadPool = QueuedThreadPool().apply {
         name = "Jetty"
@@ -37,6 +40,9 @@ class JettyService @Inject constructor(@Named("PORT") port: Int,
             securityHandler = LocalUserSecurityHandler()
             securityHandler.authenticator = BasicAuthenticator()
             securityHandler.loginService = loginService
+            addServlet(ServletHolder(readinessServlet), "/_api/info/readiness")
+            addServlet(ServletHolder(versionServlet), "/_api/info/version")
+            addServlet(ServletHolder(statusServlet), "/_api/info/status")
             addServlet(ServletHolder(mavenRepositoryServlet), "/maven/*")
         }
         handler = GzipHandler() wrapping StatisticsHandler() wrapping servletContext
