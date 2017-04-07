@@ -10,7 +10,10 @@ import com.google.inject.name.Names
 import org.araqnid.appstatus.AppVersion
 import org.araqnid.appstatus.ComponentsBuilder
 import org.araqnid.appstatus.StatusComponent
+import org.eclipse.jetty.security.HashLoginService
+import org.eclipse.jetty.security.LoginService
 import java.time.Clock
+import javax.inject.Named
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -42,6 +45,10 @@ class AppConfig(val environment: Map<String, String>) : AbstractModule() {
     fun statusComponents(builder: ComponentsBuilder, @StatusSource statusComponentSources: @JvmSuppressWildcards Set<Any>): Collection<StatusComponent> {
         return builder.buildStatusComponents(*statusComponentSources.toTypedArray())
     }
+
+    @Provides
+    @Singleton
+    fun loginService(@Named("USERS_FILE") usersFile: String): LoginService = HashLoginService("Artifact repository", usersFile)
 
     private fun getenv(key: String): String = environment[key] ?: throw ProvisionException("$key not specified in environment")
 }

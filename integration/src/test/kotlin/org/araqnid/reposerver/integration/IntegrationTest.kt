@@ -4,6 +4,10 @@ import com.google.common.io.ByteStreams
 import org.apache.http.HttpResponse
 import org.apache.http.HttpStatus
 import org.apache.http.HttpVersion
+import org.apache.http.auth.AuthScope
+import org.apache.http.auth.Credentials
+import org.apache.http.auth.UsernamePasswordCredentials
+import org.apache.http.client.CredentialsProvider
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.client.protocol.HttpClientContext
@@ -30,6 +34,20 @@ abstract class IntegrationTest {
             }
             bufferedResponse
         }, httpContext)
+    }
+
+    fun useBasicAuthentication(username: String, password: String) {
+        httpContext.credentialsProvider = object : CredentialsProvider {
+            override fun getCredentials(authscope: AuthScope): Credentials {
+                return UsernamePasswordCredentials(username, password)
+            }
+
+            override fun setCredentials(authscope: AuthScope, credentials: Credentials?) {
+            }
+
+            override fun clear() {
+            }
+        }
     }
 }
 

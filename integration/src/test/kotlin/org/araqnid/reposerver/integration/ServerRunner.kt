@@ -9,6 +9,7 @@ import com.google.inject.Key
 import com.google.inject.Provides
 import com.google.inject.Singleton
 import com.google.inject.TypeLiteral
+import com.google.inject.name.Names
 import com.google.inject.util.Modules
 import org.apache.http.HttpException
 import org.apache.http.HttpHost
@@ -26,6 +27,7 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import java.net.URI
+import java.nio.file.Paths
 import java.time.Clock
 
 class ServerRunner(val environment: Map<String, String>) : ExternalResource() {
@@ -83,6 +85,7 @@ class ServerRunner(val environment: Map<String, String>) : ExternalResource() {
         override fun configure() {
             bind(EventSource::class.java).to(InMemoryEventSource::class.java)
             bind(Clock::class.java).toInstance(clock)
+            bindConstant().annotatedWith(Names.named("USERS_FILE")).to(Paths.get("example.users.properties").toAbsolutePath().toString())
         }
 
         @Provides
