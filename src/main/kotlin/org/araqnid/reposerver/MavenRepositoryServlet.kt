@@ -3,6 +3,7 @@ package org.araqnid.reposerver
 import com.google.common.io.MoreFiles
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.Comparator.comparingInt
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -24,7 +25,26 @@ class MavenRepositoryServlet @Inject constructor(@Named("ARTIFACT_STORAGE") arti
             resp.sendError(SC_NOT_FOUND)
             return
         }
-        MoreFiles.asByteSource(path).copyTo(resp.outputStream)
+        if (Files.isDirectory(path)) {
+            resp.contentType = "text/html"
+            resp.writer.use { writer ->
+                writer.println("<title></title>")
+                writer.println("<ul>")
+                Files.list(path)
+                        .map { FileInDirectory(name = it.fileName.toString(), isSubdirectory = Files.isDirectory(it)) }
+                        .sorted(FileInDirectory.fileListingComparator)
+                        .forEachOrderedAndClose { file ->
+                            if (file.isSubdirectory)
+                                writer.println("<li><a href=\"${file.name}/\">${file.name}</a> /</li>")
+                            else
+                                writer.println("<li><a href=\"${file.name}\">${file.name}</a></li>")
+                        }
+                writer.println("</ul>");
+            }
+        }
+        else {
+            MoreFiles.asByteSource(path).copyTo(resp.outputStream)
+        }
     }
 
     override fun doPut(req: HttpServletRequest, resp: HttpServletResponse) {
@@ -38,5 +58,13 @@ class MavenRepositoryServlet @Inject constructor(@Named("ARTIFACT_STORAGE") arti
         MoreFiles.asByteSink(path).writeFrom(req.inputStream)
         resp.status = SC_CREATED
         resp.addHeader("Location", req.requestURI)
+    }
+
+    private data class FileInDirectory(val name: String, val isSubdirectory: Boolean) {
+        companion object {
+            val fileListingComparator = comparingInt { f: FileInDirectory -> if (f.isSubdirectory) 0 else 1 }
+                    .thenComparing { f -> f.name }
+
+        }
     }
 }

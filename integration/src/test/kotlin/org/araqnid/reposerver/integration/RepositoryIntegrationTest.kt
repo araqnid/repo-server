@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPut
 import org.apache.http.entity.StringEntity
 import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -29,6 +30,17 @@ class RepositoryIntegrationTest : IntegrationTest() {
         execute(HttpGet("/maven/com/example/project/0.0.0/project-0.0.0.txt"))
         assertThat(response.statusLine.statusCode, equalTo(SC_OK))
         assertThat(response.entity.asCharSource(UTF_8).read(), equalTo("test"))
+    }
+
+    @Test fun serves_directory_listing_from_storage_directory() {
+        val artifactPath = storageDir.resolve("com/example/project/0.0.0/project-0.0.0.txt")
+        Files.createDirectories(artifactPath.parent)
+        MoreFiles.asCharSink(artifactPath, UTF_8).write("test")
+
+        execute(HttpGet("/maven/com/example/project/0.0.0"))
+        assertThat(response.statusLine.statusCode, equalTo(SC_OK))
+        assertThat(response.entity, hasMimeType("text/html"))
+        assertThat(response.entity.asCharSource(UTF_8).read(), containsString("project-0.0.0.txt"))
     }
 
     @Test fun returns_404_for_nonexistent_file() {
