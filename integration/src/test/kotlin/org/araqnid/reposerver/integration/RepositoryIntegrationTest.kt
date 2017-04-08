@@ -96,4 +96,18 @@ class RepositoryIntegrationTest : IntegrationTest() {
         })
         assertThat(response.statusLine.statusCode, equalTo(SC_BAD_REQUEST))
     }
+
+    @Test fun permits_overwrite_of_maven_metadata() {
+        useBasicAuthentication("testuser", "testpassword")
+        val artifactPath = storageDir.resolve("com/example/project/0.0.0/maven-metadata.xml")
+        Files.createDirectories(artifactPath.parent)
+        MoreFiles.asCharSink(artifactPath, UTF_8).write("test")
+
+        execute(HttpPut("/maven/com/example/project/0.0.0/maven-metadata.xml").apply {
+            entity = StringEntity("updated", UTF_8)
+        })
+        assertThat(response.statusLine.statusCode, equalTo(SC_CREATED))
+        assertTrue("$artifactPath exists", Files.exists(artifactPath))
+        assertThat(MoreFiles.asCharSource(artifactPath, UTF_8).read(), equalTo("updated"))
+    }
 }

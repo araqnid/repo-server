@@ -3,6 +3,7 @@ package org.araqnid.reposerver
 import com.google.common.io.MoreFiles
 import java.nio.file.Files
 import java.nio.file.Path
+import java.util.Comparator
 import java.util.Comparator.comparingInt
 import javax.servlet.http.HttpServlet
 import javax.servlet.http.HttpServletRequest
@@ -45,7 +46,7 @@ class RepositoryServlet (val repositoryDir: Path) : HttpServlet() {
     override fun doPut(req: HttpServletRequest, resp: HttpServletResponse) {
         val pathname = req.pathInfo
         val path = repositoryDir.resolve(if (pathname.startsWith("/")) pathname.substring(1) else pathname)
-        if (Files.exists(path)) {
+        if (Files.exists(path) && !path.fileName.toString().startsWith("maven-metadata.xml")) {
             resp.sendError(SC_BAD_REQUEST, "Already exists")
             return
         }
@@ -57,7 +58,7 @@ class RepositoryServlet (val repositoryDir: Path) : HttpServlet() {
 
     private data class FileInDirectory(val name: String, val isSubdirectory: Boolean) {
         companion object {
-            val fileListingComparator = comparingInt { f: FileInDirectory -> if (f.isSubdirectory) 0 else 1 }
+            val fileListingComparator: Comparator<FileInDirectory> = comparingInt { f: FileInDirectory -> if (f.isSubdirectory) 0 else 1 }
                     .thenComparing { f -> f.name }
 
         }
