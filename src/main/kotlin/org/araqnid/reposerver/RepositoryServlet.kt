@@ -24,18 +24,18 @@ class RepositoryServlet (val repositoryDir: Path) : HttpServlet() {
         if (Files.isDirectory(path)) {
             resp.contentType = "text/html"
             resp.writer.use { writer ->
-                writer.println("<title></title>")
+                writer.println("<title>$path</title>")
                 writer.println("<ul>")
                 Files.list(path)
                         .map { FileInDirectory(name = it.fileName.toString(), isSubdirectory = Files.isDirectory(it)) }
                         .sorted(FileInDirectory.fileListingComparator)
-                        .forEachOrderedAndClose { file ->
-                            if (file.isSubdirectory)
-                                writer.println("<li><a href=\"${file.name}/\">${file.name}</a> /</li>")
+                        .forEachOrderedAndClose { (name, isSubdirectory) ->
+                            if (isSubdirectory)
+                                writer.println("<li><a href=\"$name/\">$name</a> /</li>")
                             else
-                                writer.println("<li><a href=\"${file.name}\">${file.name}</a></li>")
+                                writer.println("<li><a href=\"$name\">$name</a></li>")
                         }
-                writer.println("</ul>");
+                writer.println("</ul>")
             }
         }
         else {
