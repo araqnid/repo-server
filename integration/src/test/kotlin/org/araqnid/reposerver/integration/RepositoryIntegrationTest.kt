@@ -32,16 +32,6 @@ class RepositoryIntegrationTest : IntegrationTest() {
         assertThat(response.entity.asCharSource(UTF_8).read(), equalTo("test"))
     }
 
-    @Test fun serves_ivy_file_from_storage_directory() {
-        val artifactPath = storageDir.resolve("com/example/project/0.0.0/project-0.0.0.txt")
-        Files.createDirectories(artifactPath.parent)
-        MoreFiles.asCharSink(artifactPath, UTF_8).write("test")
-
-        execute(HttpGet("/ivy/com/example/project/0.0.0/project-0.0.0.txt"))
-        assertThat(response.statusLine.statusCode, equalTo(SC_OK))
-        assertThat(response.entity.asCharSource(UTF_8).read(), equalTo("test"))
-    }
-
     @Test fun serves_directory_listing_from_storage_directory() {
         val artifactPath = storageDir.resolve("com/example/project/0.0.0/project-0.0.0.txt")
         Files.createDirectories(artifactPath.parent)

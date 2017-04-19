@@ -1,7 +1,7 @@
 package org.araqnid.reposerver
 
 import com.google.common.util.concurrent.AbstractIdleService
-import org.eclipse.jetty.security.LoginService
+import org.eclipse.jetty.security.HashLoginService
 import org.eclipse.jetty.security.authentication.BasicAuthenticator
 import org.eclipse.jetty.server.Handler
 import org.eclipse.jetty.server.Server
@@ -19,33 +19,34 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Singleton
-class JettyService @Inject constructor(@Named("PORT") port: Int,
+class JettyService @Inject constructor(@Named("PORT") httpPort: Int,
                                        @Named("ARTIFACT_STORAGE") artifactStorage: String,
-                                       loginService: LoginService,
+                                       @Named("USERS_FILE") usersFile: String,
                                        versionServlet: VersionServlet,
                                        statusServlet: StatusServlet,
                                        readinessServlet: ReadinessServlet) : AbstractIdleService() {
     val threadPool = QueuedThreadPool().apply {
         name = "Jetty"
     }
-    val server: Server = Server(threadPool).apply {
+
+    val server = Server(threadPool).apply {
         addConnector(ServerConnector(this, 1, 1).apply {
-            this.port = port
+            port = httpPort
         })
         requestLog = Slf4jRequestLog().apply {
             logLatency = true
         }
         val servletContext = ServletContextHandler().apply {
-            val repositoryBaseDir = Paths.get(artifactStorage)
             resourceBase = artifactStorage
             securityHandler = LocalUserSecurityHandler()
             securityHandler.authenticator = BasicAuthenticator()
-            securityHandler.loginService = loginService
+            securityHandler.loginService = HashLoginService("Artifact repository", usersFile).apply {
+                isHotReload = true
+            }
             addServlet(ServletHolder(readinessServlet), "/_api/info/readiness")
             addServlet(ServletHolder(versionServlet), "/_api/info/version")
             addServlet(ServletHolder(statusServlet), "/_api/info/status")
-            addServlet(ServletHolder(RepositoryServlet(repositoryBaseDir)), "/maven/*")
-            addServlet(ServletHolder(RepositoryServlet(repositoryBaseDir)), "/ivy/*")
+            addServlet(ServletHolder(RepositoryServlet(Paths.get(artifactStorage))), "/maven/*")
         }
         handler = GzipHandler() wrapping StatisticsHandler() wrapping servletContext
     }
@@ -61,14 +62,5 @@ class JettyService @Inject constructor(@Named("PORT") port: Int,
     private infix fun <T : HandlerWrapper> T.wrapping(handler: Handler): T {
         this.handler = handler
         return this
-    }
-
-    private fun <First : HandlerWrapper, Next: Handler> First.andThen(nextHandler: Next): Next {
-        handler = nextHandler
-        return nextHandler
-    }
-
-    companion object {
-
     }
 }
