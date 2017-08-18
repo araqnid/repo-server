@@ -45,9 +45,10 @@ allprojects {
         options.deprecation = true
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
+            freeCompilerArgs = ["-Xjsr305-annotations=enable"]
         }
     }
 }
@@ -70,8 +71,8 @@ configurations {
 }
 
 dependencies {
-    compile "org.araqnid:app-status:0.0.1"
-    compile "org.araqnid:eventstore:0.0.1"
+    compile "org.araqnid:app-status:0.0.3"
+    compile "org.araqnid:eventstore:0.0.5"
     compile "com.google.guava:guava:$guavaVersion"
     compile "com.google.inject:guice:$guiceVersion"
     compile "com.google.inject.extensions:guice-servlet:$guiceVersion"
@@ -79,8 +80,8 @@ dependencies {
     compile "org.slf4j:slf4j-api:1.7.25"
     compile "org.eclipse.jetty:jetty-server:$jettyVersion"
     compile "org.eclipse.jetty:jetty-servlet:$jettyVersion"
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "org.jboss.resteasy:resteasy-jaxrs:$resteasyVersion"
     compile "org.jboss.resteasy:resteasy-guice:$resteasyVersion"
     compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
@@ -135,7 +136,7 @@ jar.dependsOn(runtimeDeps)
 check.dependsOn(toolsClasses)
 
 buildscript {
-    ext.kotlinVersion = '1.1.1'
+    ext.kotlinVersion = '1.1.4'
 
     repositories {
         mavenCentral()
