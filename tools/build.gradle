@@ -1,0 +1,10 @@
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+configurations {
+    runtime.exclude module: 'jsr305'
+}
+
+dependencies {
+    compile rootProject
+}
