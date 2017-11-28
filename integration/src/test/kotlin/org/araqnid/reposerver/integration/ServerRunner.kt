@@ -2,15 +2,10 @@ package org.araqnid.reposerver.integration
 
 import com.google.common.base.Preconditions
 import com.google.common.util.concurrent.ServiceManager
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
-import com.google.inject.Injector
-import com.google.inject.Key
-import com.google.inject.Provides
-import com.google.inject.Singleton
-import com.google.inject.TypeLiteral
+import com.google.inject.*
 import com.google.inject.name.Names
 import com.google.inject.util.Modules
+import com.timgroup.clocks.testing.ManualClock
 import org.apache.http.HttpException
 import org.apache.http.HttpHost
 import org.apache.http.conn.routing.HttpRoute
@@ -20,7 +15,6 @@ import org.araqnid.eventstore.EventSource
 import org.araqnid.eventstore.InMemoryEventSource
 import org.araqnid.reposerver.AppConfig
 import org.araqnid.reposerver.JettyService
-import org.araqnid.reposerver.testutils.ManualClock
 import org.eclipse.jetty.server.NetworkConnector
 import org.junit.rules.ExternalResource
 import org.junit.rules.TemporaryFolder
