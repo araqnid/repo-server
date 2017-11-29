@@ -1,15 +1,17 @@
-apply plugin: 'java'
-apply plugin: 'kotlin'
-apply plugin: 'application'
+plugins {
+    id "java"
+    id "application"
+    id "org.jetbrains.kotlin.jvm" version "1.2.0"
+}
 
 mainClassName = 'org.araqnid.reposerver.boot.Main'
 
 ext {
-    jettyVersion = '9.4.6.v20170531'
-    jacksonVersion = '2.8.7'
+    jettyVersion = '9.4.7.v20170914'
+    jacksonVersion = '2.9.2'
     resteasyVersion = '3.1.2.Final'
     guiceVersion = '4.1.0'
-    guavaVersion = '23.0'
+    guavaVersion = '23.5-jre'
 }
 
 configurations {
@@ -17,7 +19,7 @@ configurations {
 }
 
 allprojects {
-    group = "org.araqnid.fuellog"
+    group = "org.araqnid.repo"
     version = "git describe --tags".execute().text.trim().replaceFirst("^v", "").replace('-', '.')
 
     repositories {
@@ -38,7 +40,6 @@ allprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = ["-Xjsr305-annotations=enable"]
         }
     }
 }
@@ -61,8 +62,8 @@ configurations {
 }
 
 dependencies {
-    compile "org.araqnid:app-status:0.0.5"
-    compile "org.araqnid:eventstore:0.0.8"
+    compile "org.araqnid:app-status:0.0.9"
+    compile "org.araqnid:eventstore:0.0.18"
     compile "com.google.guava:guava:$guavaVersion"
     compile "com.google.inject:guice:$guiceVersion"
     compile "com.google.inject.extensions:guice-servlet:$guiceVersion"
@@ -70,7 +71,7 @@ dependencies {
     compile "org.slf4j:slf4j-api:1.7.25"
     compile "org.eclipse.jetty:jetty-server:$jettyVersion"
     compile "org.eclipse.jetty:jetty-servlet:$jettyVersion"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre8"
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     compile "org.jetbrains.kotlin:kotlin-reflect"
     compile "org.jboss.resteasy:resteasy-jaxrs:$resteasyVersion"
     compile "org.jboss.resteasy:resteasy-guice:$resteasyVersion"
@@ -122,15 +123,3 @@ task runtimeDeps(dependsOn: 'processResources') {
 }
 
 jar.dependsOn(runtimeDeps)
-
-buildscript {
-    ext.kotlinVersion = '1.1.4'
-
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-    }
-}
