@@ -57,6 +57,13 @@ allprojects {
     }
 }
 
+configurations {
+    "runtime" {
+        exclude(group = "ch.qos.logback", module = "jsr305")
+    }
+    create("boot")
+}
+
 tasks {
     val runtimeDeps by creating(RuntimeDependenciesTask::class)
 
@@ -68,12 +75,6 @@ tasks {
         from(runtimeDeps) {
             into("META-INF")
         }
-    }
-}
-
-configurations {
-    "runtime" {
-        exclude(group = "ch.qos.logback", module = "jsr305")
     }
 }
 
