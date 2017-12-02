@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.daemon.common.toHexString
+import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
 
 plugins {
@@ -16,7 +17,22 @@ val resteasyVersion by extra { "3.1.4.Final" }
 val guiceVersion by extra { "4.1.0" }
 val guavaVersion by extra { "23.0" }
 
+val gitVersion by extra {
+    val capture = ByteArrayOutputStream()
+    project.exec {
+        commandLine("git", "describe", "--tags")
+        standardOutput = capture
+    }
+    String(capture.toByteArray())
+            .trim()
+            .removePrefix("v")
+            .replace('-', '.')
+}
+
 allprojects {
+    group = "org.araqnid"
+    version = gitVersion
+
     tasks {
         withType<JavaCompile> {
             sourceCompatibility = "1.8"
