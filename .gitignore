@@ -4,3 +4,4 @@ build
 /out
 /.build_number
 /storage
+/buildSrc/.gradle
