@@ -1,3 +1,4 @@
+import org.araqnid.gradle.RuntimeDependenciesTask
 import org.jetbrains.kotlin.daemon.common.toHexString
 import java.io.ByteArrayOutputStream
 import java.security.MessageDigest
@@ -57,42 +58,16 @@ allprojects {
 }
 
 tasks {
-    val runtimeDeps by creating {
-        val sha1 = MessageDigest.getInstance("SHA-1")
-        val outputDir = File(buildDir, "runtimeDeps")
-
-        outputs.dir(outputDir)
-        inputs.files(configurations["runtime"])
-
-        doLast {
-            data class Dep(val digest: String, val gav: String, val type: String)
-            outputDir.mkdirs()
-
-            File(outputDir, "${project.name}.deps.txt").outputStream().bufferedWriter().use { w ->
-                configurations["runtime"].resolvedConfiguration.resolvedArtifacts
-                        .map { artifact ->
-                            val digest = sha1.digest(artifact.file.readBytes()).toHexString()
-                            Dep(digest, artifact.moduleVersion.id.toString(), artifact.type)
-                        }
-                        .sortedBy { dep -> dep.gav }
-                        .forEach { dep -> w.write("${dep.digest} ${dep.gav} ${dep.type}\n")}
-            }
-
-            File(outputDir, "${project.name}.bootdeps.txt").outputStream().bufferedWriter().use {
-                // blank - no extra boot classpath entries
-            }
-        }
-    }
+    val runtimeDeps by creating(RuntimeDependenciesTask::class)
 
     "jar"(Jar::class) {
         manifest {
             attributes["Implementation-Title"] = project.description ?: project.name
             attributes["Implementation-Version"] = project.version
         }
-        from("$buildDir/runtimeDeps") {
+        from(runtimeDeps) {
             into("META-INF")
         }
-        dependsOn(runtimeDeps)
     }
 }
 
