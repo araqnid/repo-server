@@ -54,6 +54,7 @@ allprojects {
     repositories {
         mavenCentral()
         maven(url = "https://repo.araqnid.org/maven/")
+        maven(url = "https://dl.bintray.com/araqnid/maven")
     }
 }
 
@@ -103,8 +104,6 @@ dependencies {
     compile("com.fasterxml.uuid:java-uuid-generator:3.1.3")
     compile("org.tukaani:xz:1.5")
     compile("org.apache.commons:commons-compress:1.13")
-    testCompile("junit:junit:4.12")
-    testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile(project(":test-utils"))
     runtime("ch.qos.logback:logback-classic:1.2.2")
     runtime("org.slf4j:jcl-over-slf4j:1.7.25")

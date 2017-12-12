@@ -1,6 +1,9 @@
 package org.araqnid.reposerver.integration
 
 import com.google.common.io.MoreFiles
+import com.natpryce.hamkrest.assertion.assertThat
+import com.natpryce.hamkrest.containsSubstring
+import com.natpryce.hamkrest.equalTo
 import org.apache.http.HttpStatus.SC_BAD_REQUEST
 import org.apache.http.HttpStatus.SC_CREATED
 import org.apache.http.HttpStatus.SC_NOT_FOUND
@@ -9,9 +12,6 @@ import org.apache.http.HttpStatus.SC_UNAUTHORIZED
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPut
 import org.apache.http.entity.StringEntity
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.containsString
-import org.hamcrest.Matchers.equalTo
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.nio.charset.StandardCharsets.UTF_8
@@ -40,7 +40,7 @@ class RepositoryIntegrationTest : IntegrationTest() {
         execute(HttpGet("/maven/com/example/project/0.0.0"))
         assertThat(response.statusLine.statusCode, equalTo(SC_OK))
         assertThat(response.entity, hasMimeType("text/html"))
-        assertThat(response.entity.asCharSource(UTF_8).read(), containsString("project-0.0.0.txt"))
+        assertThat(response.entity.asCharSource(UTF_8).read(), containsSubstring("project-0.0.0.txt"))
     }
 
     @Test fun returns_404_for_nonexistent_file() {
