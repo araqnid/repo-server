@@ -12,11 +12,11 @@ application {
     mainClassName = "org.araqnid.reposerver.boot.Main"
 }
 
-val jettyVersion by extra { "9.4.7.v20170914" }
-val jacksonVersion by extra { "2.9.2" }
-val resteasyVersion by extra { "3.1.4.Final" }
-val guiceVersion by extra { "4.1.0" }
-val guavaVersion by extra { "23.0" }
+val jettyVersion by extra("9.4.7.v20170914")
+val jacksonVersion by extra("2.9.2")
+val resteasyVersion by extra("3.1.4.Final")
+val guiceVersion by extra("4.1.0")
+val guavaVersion by extra("23.0")
 
 val gitVersion by extra {
     val capture = ByteArrayOutputStream()
