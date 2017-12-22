@@ -52,9 +52,7 @@ allprojects {
     }
 
     repositories {
-        mavenCentral()
-        maven(url = "https://repo.araqnid.org/maven/")
-        maven(url = "https://dl.bintray.com/araqnid/maven")
+        jcenter()
     }
 }
 
@@ -79,12 +77,12 @@ tasks {
 }
 
 dependencies {
-    compile("org.araqnid:eventstore:0.0.20")
+    compile("org.araqnid:eventstore:0.0.22")
     compile("com.google.inject:guice:$guiceVersion")
     compile("org.eclipse.jetty:jetty-server:$jettyVersion")
     implementation(kotlin("stdlib-jdk8", "1.2.10"))
     implementation(kotlin("reflect", "1.2.10"))
-    implementation("org.araqnid:app-status:0.0.11")
+    implementation("org.araqnid:app-status:0.0.13")
     implementation("com.google.guava:guava:$guavaVersion")
     implementation("com.google.inject.extensions:guice-servlet:$guiceVersion")
     implementation("com.google.inject.extensions:guice-multibindings:$guiceVersion")
