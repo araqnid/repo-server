@@ -60,7 +60,7 @@ allprojects {
 
 configurations {
     "runtime" {
-        exclude(group = "ch.qos.logback", module = "jsr305")
+        exclude(module = "jsr305")
     }
 }
 
