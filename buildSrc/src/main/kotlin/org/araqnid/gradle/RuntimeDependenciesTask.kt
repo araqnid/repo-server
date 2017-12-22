@@ -3,7 +3,9 @@ package org.araqnid.gradle
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.plugins.JavaPlugin
 import org.gradle.api.tasks.InputFiles
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.task
@@ -20,10 +22,10 @@ open class RuntimeDependenciesTask : DefaultTask() {
     var outputDir = File(project.buildDir, name)
 
     @get:InputFiles
-    val runtime: Configuration = project.configurations.getByName("runtime")
+    val runtime: Configuration by lazy { project.configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
 
-    @get:InputFiles
-    val boot: Configuration = project.configurations.getByName("boot")
+    @get:InputFiles @get:Optional
+    val boot: Configuration? by lazy { project.configurations.findByName("boot") }
 
     @TaskAction
     fun run() {
@@ -31,11 +33,12 @@ open class RuntimeDependenciesTask : DefaultTask() {
         writeFile(boot, "${project.name}.bootdeps.txt")
     }
 
-    private fun writeFile(cfg: Configuration, filename: String) {
+    private fun writeFile(cfg: Configuration?, filename: String) {
         val sha1 = MessageDigest.getInstance("SHA-1")
         val file = File(outputDir, filename)
         logger.info("writing runtime dependencies to $file")
         file.outputStream().bufferedWriter().use { w ->
+            if (cfg == null) return@use
             cfg.resolvedConfiguration.resolvedArtifacts
                     .map { artifact ->
                         val digest = sha1.digest(artifact.file.readBytes()).toHexString()

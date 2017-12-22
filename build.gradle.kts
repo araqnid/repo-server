@@ -5,7 +5,7 @@ import java.security.MessageDigest
 
 plugins {
     application
-    kotlin("jvm") version "1.2.0"
+    kotlin("jvm") version "1.2.10"
 }
 
 application {
@@ -62,7 +62,6 @@ configurations {
     "runtime" {
         exclude(group = "ch.qos.logback", module = "jsr305")
     }
-    create("boot")
 }
 
 tasks {
@@ -80,31 +79,30 @@ tasks {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-    implementation(kotlin("reflect"))
-    compile("org.araqnid:app-status:0.0.11")
     compile("org.araqnid:eventstore:0.0.20")
-    compile("com.google.guava:guava:$guavaVersion")
     compile("com.google.inject:guice:$guiceVersion")
-    compile("com.google.inject.extensions:guice-servlet:$guiceVersion")
-    compile("com.google.inject.extensions:guice-multibindings:$guiceVersion")
-    compile("org.slf4j:slf4j-api:1.7.25")
     compile("org.eclipse.jetty:jetty-server:$jettyVersion")
-    compile("org.eclipse.jetty:jetty-servlet:$jettyVersion")
-    compile("org.jboss.resteasy:resteasy-jaxrs:$resteasyVersion")
-    compile("org.jboss.resteasy:resteasy-guice:$resteasyVersion")
-    compile("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion")
-    compile("com.fasterxml.jackson.module:jackson-module-guice:$jacksonVersion")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-guava:$jacksonVersion")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
-    compile("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
-    compile("com.google.code.findbugs:jsr305:3.0.0")
-    compile("org.apache.httpcomponents:httpasyncclient:4.1.3")
-    compile("com.fasterxml.uuid:java-uuid-generator:3.1.3")
-    compile("org.tukaani:xz:1.5")
-    compile("org.apache.commons:commons-compress:1.13")
-    testCompile(project(":test-utils"))
-    runtime("ch.qos.logback:logback-classic:1.2.2")
-    runtime("org.slf4j:jcl-over-slf4j:1.7.25")
+    implementation(kotlin("stdlib-jdk8", "1.2.10"))
+    implementation(kotlin("reflect", "1.2.10"))
+    implementation("org.araqnid:app-status:0.0.11")
+    implementation("com.google.guava:guava:$guavaVersion")
+    implementation("com.google.inject.extensions:guice-servlet:$guiceVersion")
+    implementation("com.google.inject.extensions:guice-multibindings:$guiceVersion")
+    implementation("org.slf4j:slf4j-api:1.7.25")
+    implementation("org.eclipse.jetty:jetty-servlet:$jettyVersion")
+    implementation("org.jboss.resteasy:resteasy-jaxrs:$resteasyVersion")
+    implementation("org.jboss.resteasy:resteasy-guice:$resteasyVersion")
+    implementation("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-guice:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-guava:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVersion")
+    implementation("org.apache.httpcomponents:httpasyncclient:4.1.3")
+    implementation("com.fasterxml.uuid:java-uuid-generator:3.1.3")
+    implementation("org.tukaani:xz:1.5")
+    implementation("org.apache.commons:commons-compress:1.13")
+    testImplementation(project(":test-utils"))
+    runtimeOnly("ch.qos.logback:logback-classic:1.2.2")
+    runtimeOnly("org.slf4j:jcl-over-slf4j:1.7.25")
 }
